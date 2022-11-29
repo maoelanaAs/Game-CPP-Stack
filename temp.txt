@@ -1,0 +1,73 @@
+
+// Mengecek apakah scoreStack kosong
+bool isEmpty()
+{
+  return head == NULL;
+}
+
+// Menambah score
+void addScore(int value)
+{
+  scoreStack *help = new scoreStack();
+  help->value = value;
+  help->next = NULL;
+
+  if (isEmpty())
+  {
+    head = tail = help;
+  }
+  else
+  {
+    tail->next = help;
+    tail = help;
+  }
+}
+
+// Mengurangi score
+void subScore(int value)
+{
+  if (isEmpty())
+  {
+  }
+  else
+  {
+    scoreStack *key = head;
+    scoreStack *prev = NULL;
+    int pos = 0;
+
+    while (key != NULL)
+    {
+      if (key->value == value)
+      {
+        if (pos == 0)
+        {
+          prev = key;
+          prev = prev->next;
+          head = prev;
+          free(key);
+          break;
+        }
+        else if (key->next == NULL)
+        {
+          prev->next = NULL;
+          tail = prev;
+          free(key);
+          break;
+        }
+        else
+        {
+          prev->next = key->next;
+          tail = prev;
+          free(key);
+          break;
+        }
+      }
+      else
+      {
+      }
+      prev = key;
+      key = key->next;
+      pos++;
+    }
+  }
+}

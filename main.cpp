@@ -9,45 +9,34 @@
 
 using namespace std;
 
-// Calculating score
-struct scoreStack
-{
-  int value;
-  scoreStack *next;
-};
+int xScore = 84;
+int xHighestScore = 84;
+int score = 0;
+int highestScore = 0;
 
-scoreStack *head = NULL;
-scoreStack *tail = NULL;
-
-int xScore;
-int scoreValue = 0;
-
-bool isEmpty();
-void addScore();
-void subScore();
 void dispScore();
 
 // Posisi hero, enemy, fruit
 // Posisi awal hero
-int xHero = 35;
+int xHero = 38;
 int yHero = 13;
 int xHeroPrev = xHero + 1;
 int yHeroPrev = yHero;
 
 // Batas Gerak
-int tAtas = 2;
+int tAtas = 0;
 int tKiri = 0;
-int tBawah = 24;
-int tKanan = 70;
+int tBawah = 26;
+int tKanan = 76;
 
 // Posisi awal enemy
-float xEnemy = 69;
-float yEnemy = 23;
+float xEnemy = 75;
+float yEnemy = 25;
 float xEnemyPrev = xEnemy;
 float yEnemyPrev = yEnemy;
 
 // langkah enemy
-float lEnemy = 0.3;
+float lEnemy = 0.2;
 
 // Posisi awal fruit
 int xFruit = xAcak();
@@ -74,6 +63,7 @@ int main()
   clearCMD();
   printMenu();
   clearArena();
+  dispScore();
 
   // tampil fruit pertama
   dispFruit();
@@ -83,12 +73,17 @@ int main()
   {
     // menghitung detik
     timer += 0.1;
+    gotoxy(84, 2);
+    printf("%.0f ", timer);
 
     // jika tidak makan selama 10 detik (-1 score)
     if ((int)timer >= 10)
     {
-      // subScore();
-      // dispScore();
+      if (score > 0)
+      {
+        score--;
+      }
+      dispScore();
 
       timer = 0;
     }
@@ -102,14 +97,6 @@ int main()
     // Displaying Hero & Enemy
     dispHeroEnemy();
 
-    // Jika score = 5 (menang)
-    if (scoreValue == 5)
-    {
-      gotoxy(25, 13);
-      printf("Selamat Anda Menang!!");
-      break;
-    }
-
     // Movement Hero & Enemy
     heroMovement();
     enemyMovement();
@@ -117,9 +104,11 @@ int main()
     // Jika hero makan fruit (+1 score)
     if (xHero == xFruit && yHero == yFruit)
     {
-
-      scoreValue++;
-      addScore();
+      score++;
+      if (score > highestScore)
+      {
+        highestScore++;
+      }
       dispScore();
 
       dispFruit();
@@ -131,72 +120,27 @@ int main()
 
   } while (clickedKey != 27);
 
-  gotoxy(0, 25);
+  gotoxy(0, 28);
 
   return 0;
-}
-
-// Mengecek apakah scoreStack kosong
-bool isEmpty()
-{
-  return head == NULL;
-}
-
-// Menambah score
-void addScore()
-{
-  scoreStack *help = new scoreStack();
-  help->value = 254;
-  help->next = NULL;
-
-  if (isEmpty())
-  {
-    head = tail = help;
-  }
-  else
-  {
-    tail->next = help;
-    tail = help;
-  }
-}
-
-// Mengurangi score
-void subScore()
-{
-  scoreStack *key = head;
-  scoreStack *prev = NULL;
-  if (isEmpty())
-  {
-  }
-  else
-  {
-    while (key != NULL)
-    {
-      if (key->next == NULL)
-      {
-        prev->next = NULL;
-        tail = prev;
-        free(key);
-      }
-      prev = key;
-      key = key->next;
-    }
-  }
 }
 
 // Menampilkan score
 void dispScore()
 {
-  scoreStack *key = head;
-
-  xScore = 64;
-  while (key != NULL)
+  if (score > 99)
   {
-    gotoxy(xScore, 1);
-    printf("%c", key->value);
-    xScore++;
-    key = key->next;
+    xScore--;
   }
+  if (highestScore > 99)
+  {
+    xHighestScore--;
+  }
+
+  gotoxy(xScore, 5);
+  printf("%d ", score);
+  gotoxy(xHighestScore, 7);
+  printf("%d ", highestScore);
 }
 
 // Menampilkan fruit secara acak
