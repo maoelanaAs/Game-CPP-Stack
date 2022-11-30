@@ -9,15 +9,17 @@
 
 using namespace std;
 
-int xScore = 84;
-int xHighestScore = 84;
+int xScore = 85;
+int xHighestScore = 85;
 int score = 0;
 int highestScore = 0;
+int scoreAdd = 1;
 
 void dispScore();
 
 // Posisi hero, enemy, fruit
 // Posisi awal hero
+int charHero = 206;
 int xHero = 38;
 int yHero = 13;
 int xHeroPrev = xHero + 1;
@@ -43,6 +45,8 @@ int xFruit = xAcak();
 int yFruit = yAcak();
 
 void dispFruit();
+void eatFruit();
+void overTime();
 
 // Displaying dan Movement hero & enemy
 void dispHeroEnemy();
@@ -51,6 +55,9 @@ void enemyMovement();
 
 // Untuk menerima inputan keyboard
 char clickedKey;
+
+// Game over
+int gameOver();
 
 // Untuk menghitung detik
 float timer = 0;
@@ -76,17 +83,8 @@ int main()
     gotoxy(84, 2);
     printf("%.0f ", timer);
 
-    // jika tidak makan selama 10 detik (-1 score)
-    if ((int)timer >= 10)
-    {
-      if (score > 0)
-      {
-        score--;
-      }
-      dispScore();
-
-      timer = 0;
-    }
+    // overtime (timer > 10 tp tdk makan)
+    overTime();
 
     // jika fruit tertimpa enemy (memindahkan fruit)
     if ((int)xEnemy == xFruit && (int)yEnemy == yFruit)
@@ -101,19 +99,17 @@ int main()
     heroMovement();
     enemyMovement();
 
-    // Jika hero makan fruit (+1 score)
-    if (xHero == xFruit && yHero == yFruit)
+    // Eating Fruit
+    eatFruit();
+
+    // (1) game over
+    if (gameOver() == 1)
     {
-      score++;
-      if (score > highestScore)
-      {
-        highestScore++;
-      }
-      dispScore();
-
-      dispFruit();
-
-      timer = 0;
+      clearArena();
+      dispHeroEnemy();
+      gotoxy(33, 13);
+      printf("Game Over!!");
+      break;
     }
 
     slow();
@@ -128,14 +124,10 @@ int main()
 // Menampilkan score
 void dispScore()
 {
-  if (score > 99)
-  {
-    xScore--;
-  }
-  if (highestScore > 99)
-  {
-    xHighestScore--;
-  }
+  gotoxy(83, 5);
+  printf("000");
+  gotoxy(83, 7);
+  printf("000");
 
   gotoxy(xScore, 5);
   printf("%d ", score);
@@ -152,6 +144,50 @@ void dispFruit()
   printf("*");
 }
 
+// Saat hero memakan fruit
+void eatFruit()
+{
+  if (xHero == xFruit && yHero == yFruit)
+  {
+    score += scoreAdd;
+    if (score == 10 || score == 100)
+    {
+      xScore--;
+      if ((highestScore + scoreAdd) == 10 || (highestScore + scoreAdd) == 100)
+      {
+        xHighestScore--;
+      }
+    }
+    if (score > highestScore)
+    {
+      highestScore = score;
+    }
+    dispScore();
+
+    dispFruit();
+
+    timer = 0;
+  }
+}
+
+void overTime()
+{
+  if ((int)timer >= 10)
+  {
+    if (score > 0)
+    {
+      score--;
+    }
+    if (score == 9 || score == 99)
+    {
+      xScore++;
+    }
+    dispScore();
+
+    timer = 0;
+  }
+}
+
 // Menampilkan hero dan enemy
 void dispHeroEnemy()
 {
@@ -163,7 +199,7 @@ void dispHeroEnemy()
 
   // Memunculkan Hero dan Enemy
   gotoxy(xHero, yHero);
-  printf("H");
+  printf("%c", charHero);
   gotoxy(xEnemy, yEnemy);
   printf("O");
 }
@@ -181,33 +217,29 @@ void heroMovement()
   {
     xHeroPrev = xHero;
     yHeroPrev = yHero;
+    charHero = 202;
     yHero--;
-    if (yHero <= tAtas)
-      yHero = tAtas + 1;
   }
   if (toupper(clickedKey) == 'A') // ke kiri
   {
     xHeroPrev = xHero;
     yHeroPrev = yHero;
+    charHero = 185;
     xHero--;
-    if (xHero <= tKiri)
-      xHero = tKiri + 1;
   }
   if (toupper(clickedKey) == 'S') // ke bawah
   {
     xHeroPrev = xHero;
     yHeroPrev = yHero;
+    charHero = 203;
     yHero++;
-    if (yHero >= tBawah)
-      yHero = tBawah - 1;
   }
   if (toupper(clickedKey) == 'D') // ke kanan
   {
     xHeroPrev = xHero;
     yHeroPrev = yHero;
+    charHero = 204;
     xHero++;
-    if (xHero >= tKanan)
-      xHero = tKanan - 1;
   }
 }
 
@@ -234,5 +266,33 @@ void enemyMovement()
   {
     xEnemyPrev = xEnemy;
     xEnemy -= lEnemy;
+  }
+}
+
+int gameOver()
+{
+  if (xHero == (int)xEnemy && yHero == (int)yEnemy)
+  {
+    return 1;
+  }
+  if (yHero == tAtas)
+  {
+    yHero += 1;
+    return 1;
+  }
+  if (xHero == tKiri)
+  {
+    xHero += 1;
+    return 1;
+  }
+  if (yHero == tBawah)
+  {
+    yHero -= 1;
+    return 1;
+  }
+  if (xHero == tKanan)
+  {
+    xHero -= 1;
+    return 1;
   }
 }
