@@ -1,10 +1,10 @@
 #include <iostream>
-#include <cstdlib>
-#include <windows.h>
 #include <conio.h>
-#include <stdio.h>
-#include <time.h>
 #include <stdlib.h>
+#include <windows.h>
+#include <time.h>
+#include <cstdlib>
+#include <stdio.h>
 #include "header.h"
 
 using namespace std;
@@ -32,6 +32,7 @@ int tBawah = 26;
 int tKanan = 76;
 
 // Posisi awal enemy
+int charEnemy = 60;
 float xEnemy = 75;
 float yEnemy = 25;
 float xEnemyPrev = xEnemy;
@@ -94,6 +95,12 @@ int main()
 
     // Displaying Hero & Enemy
     dispHeroEnemy();
+
+    // Deteksi Keyboard
+    if (kbhit())
+    {
+      clickedKey = getch();
+    }
 
     // Movement Hero & Enemy
     heroMovement();
@@ -201,18 +208,12 @@ void dispHeroEnemy()
   gotoxy(xHero, yHero);
   printf("%c", charHero);
   gotoxy(xEnemy, yEnemy);
-  printf("O");
+  printf("%c", charEnemy);
 }
 
 // Mengerakkan hero dgn keyboard
 void heroMovement()
 {
-  // Deteksi keyboard
-  if (kbhit())
-  {
-    clickedKey = getch();
-  }
-
   if (toupper(clickedKey) == 'W') // ke atas
   {
     xHeroPrev = xHero;
@@ -261,38 +262,44 @@ void enemyMovement()
   {
     xEnemyPrev = xEnemy;
     xEnemy += lEnemy;
+    charEnemy = 62;
   }
   else if (xEnemy > xHero) // enemy di kanan hero
   {
     xEnemyPrev = xEnemy;
     xEnemy -= lEnemy;
+    charEnemy = 60;
   }
 }
 
 int gameOver()
 {
-  if (xHero == (int)xEnemy && yHero == (int)yEnemy)
-  {
-    return 1;
-  }
   if (yHero == tAtas)
   {
     yHero += 1;
     return 1;
   }
-  if (xHero == tKiri)
+  else if (xHero == tKiri)
   {
     xHero += 1;
     return 1;
   }
-  if (yHero == tBawah)
+  else if (yHero == tBawah)
   {
     yHero -= 1;
     return 1;
   }
-  if (xHero == tKanan)
+  else if (xHero == tKanan)
   {
     xHero -= 1;
     return 1;
+  }
+  else if (xHero == (int)xEnemy && yHero == (int)yEnemy)
+  {
+    return 1;
+  }
+  else
+  {
+    return 0;
   }
 }

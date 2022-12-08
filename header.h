@@ -142,7 +142,7 @@ void printMenu()
   gotoxy(82, 16);
   printf("ITEMS");
   gotoxy(78, 17);
-  printf("S : ++ SPEED");
+  printf("S : -- SPEED");
   gotoxy(82, 18);
   printf("ENEMY");
   gotoxy(78, 19);
