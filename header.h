@@ -33,9 +33,9 @@ void clearCMD()
 // Membuat / mengkosongkan arena
 void clearArena()
 {
-  for (int i = 1; i <= 75; i++)
+  for (int i = 2; i <= 76; i++)
   {
-    for (int j = 1; j <= 25; j++)
+    for (int j = 2; j <= 26; j++)
     {
       gotoxy(i, j);
       cout << " ";
@@ -50,34 +50,34 @@ void clearArena()
 void printMenu()
 {
   // Sudut kiri Atas
-  gotoxy(0, 0);
+  gotoxy(1, 1);
   printf("%c", 201);
 
   // Sudut Kiri Bawah
-  gotoxy(0, 26);
+  gotoxy(1, 27);
   printf("%c", 200);
 
   // Sudut Kanan Atas
-  gotoxy(92, 0);
+  gotoxy(93, 1);
   printf("%c", 187);
 
   // Sudut Kanan Bawah
-  gotoxy(92, 26);
+  gotoxy(93, 27);
   printf("%c", 188);
 
-  for (int x = 1; x <= 91; x++)
+  for (int x = 2; x <= 92; x++)
   {
-    gotoxy(x, 0);
+    gotoxy(x, 1);
     printf("%c", 205);
-    gotoxy(x, 26);
+    gotoxy(x, 27);
     printf("%c", 205);
   }
 
-  for (int x = 77; x <= 91; x++)
+  for (int x = 78; x <= 92; x++)
   {
-    gotoxy(x, 3);
+    gotoxy(x, 4);
     printf("%c", 205);
-    gotoxy(x, 8);
+    gotoxy(x, 9);
     printf("%c", 205);
     gotoxy(x, 15);
     printf("%c", 205);
@@ -87,98 +87,99 @@ void printMenu()
     printf("%c", 205);
   }
 
-  for (int y = 1; y <= 25; y++)
+  for (int y = 2; y <= 26; y++)
   {
-    gotoxy(0, y);
+    gotoxy(1, y);
     printf("%c", 186);
-    gotoxy(76, y);
+    gotoxy(77, y);
     printf("%c", 186);
-    gotoxy(92, y);
+    gotoxy(93, y);
     printf("%c", 186);
   }
 
-  gotoxy(76, 0);
+  gotoxy(77, 1);
   printf("%c", 203);
-  gotoxy(76, 26);
+  gotoxy(77, 27);
   printf("%c", 202);
-  gotoxy(76, 3);
+  gotoxy(77, 4);
   printf("%c", 204);
-  gotoxy(76, 8);
+  gotoxy(77, 9);
   printf("%c", 204);
-  gotoxy(76, 15);
+  gotoxy(77, 15);
   printf("%c", 204);
-  gotoxy(76, 20);
+  gotoxy(77, 20);
   printf("%c", 204);
-  gotoxy(76, 23);
+  gotoxy(77, 23);
   printf("%c", 204);
-  gotoxy(92, 3);
+  gotoxy(93, 4);
   printf("%c", 185);
-  gotoxy(92, 8);
+  gotoxy(93, 9);
   printf("%c", 185);
-  gotoxy(92, 15);
+  gotoxy(93, 15);
   printf("%c", 185);
-  gotoxy(92, 20);
+  gotoxy(93, 20);
   printf("%c", 185);
-  gotoxy(92, 23);
+  gotoxy(93, 23);
   printf("%c", 185);
 
-  gotoxy(82, 1);
+  gotoxy(83, 2);
   printf("TIMER");
-  gotoxy(82, 4);
+  gotoxy(83, 5);
   printf("SCORE");
-  gotoxy(81, 6);
+  gotoxy(82, 7);
   printf("HIGHEST");
-  gotoxy(80, 9);
+  gotoxy(81, 10);
   printf("W  : UP");
-  gotoxy(80, 10);
+  gotoxy(81, 11);
   printf("S  : DOWN");
-  gotoxy(80, 11);
+  gotoxy(81, 12);
   printf("A  : LEFT");
-  gotoxy(80, 12);
+  gotoxy(81, 13);
   printf("D  : RIGHT");
-  gotoxy(80, 13);
-  printf("P  : PAUSE");
-  gotoxy(79, 14);
+  gotoxy(80, 14);
   printf("ESC : EXIT");
-  gotoxy(82, 16);
+  gotoxy(83, 16);
   printf("ITEMS");
-  gotoxy(78, 17);
+  gotoxy(79, 17);
   printf("S : -- SPEED");
-  gotoxy(82, 18);
+  gotoxy(83, 18);
   printf("ENEMY");
-  gotoxy(78, 19);
+  gotoxy(79, 19);
   printf("2 : 2x SCORE");
-  gotoxy(78, 21);
-  printf("COOLDOWN ITEM");
-  gotoxy(78, 24);
-  printf("CREATED BY <%c", 205);
-  gotoxy(78, 25);
-  printf("%c> maoelanaAs", 205);
+  gotoxy(79, 21);
+  printf("ITEM COOLDOWN");
+  gotoxy(79, 24);
+  printf("PACMAN GAME %c", 254);
+  gotoxy(79, 25);
+  printf("%c MODIFIED BY", 254);
+  gotoxy(79, 26);
+  printf("@maoelanaAs %c", 254);
 }
 
+// Loading screen awal game
 void loadingScreen()
 {
-  gotoxy(35, 12);
+  gotoxy(36, 13);
   printf("Loading");
   for (int i = 0; i < 6; i++)
   {
     if (i < 3)
     {
-      gotoxy(37 + i, 13);
+      gotoxy(38 + i, 14);
       printf("*");
     }
     if (i > 2)
     {
-      gotoxy(33 + i, 13);
+      gotoxy(34 + i, 14);
       printf(" %c", 204);
     }
     Sleep(500);
   }
-  gotoxy(35, 12);
+  gotoxy(36, 13);
   printf("       ");
-  gotoxy(37, 13);
+  gotoxy(38, 14);
   printf("   ");
-  gotoxy(35, 13);
+  gotoxy(36, 14);
   printf("Start!!");
   Sleep(500);
 }
@@ -187,13 +188,13 @@ void loadingScreen()
 int xAcak()
 {
   int x = rand();
-  if ((x % 75) < 1)
+  if ((x % 76) < 2)
   {
-    return (x % 75) + 1;
+    return (x % 76) + 2;
   }
   else
   {
-    return (x % 75);
+    return (x % 76);
   }
 }
 
@@ -201,13 +202,13 @@ int xAcak()
 int yAcak()
 {
   int y = rand();
-  if ((y % 25) < 1)
+  if ((y % 26) < 2)
   {
-    return (y % 25) + 1;
+    return (y % 26) + 2;
   }
   else
   {
-    return (y % 25);
+    return (y % 26);
   }
 }
 

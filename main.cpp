@@ -11,62 +11,72 @@ using namespace std;
 
 void init();
 
-int getHighScore();
-int pushHighScore(int);
-
-int xScore = 85;
-int xHighestScore = 85;
+// All About Score
+int xScore = 86;
+int xHighestScore = 86;
 int score = 0;
 int highestScore;
 int scoreAdd = 1;
-
+int getHighScore();
+void pushHighScore(int);
 void dispScore();
 
-// Posisi hero, enemy, fruit
-// Posisi awal hero
+// Keyboard Clicked
+char clickedKey;
+void keyDetection();
+
+// All About Hero
 int charHero = 206;
-int xHero = 38;
-int yHero = 13;
+int xHero = 39;
+int yHero = 14;
 int xHeroPrev = xHero + 1;
 int yHeroPrev = yHero;
+// Batas Gerak Hero
+int tAtas = 1;
+int tKiri = 1;
+int tBawah = 27;
+int tKanan = 77;
 
-// Batas Gerak
-int tAtas = 0;
-int tKiri = 0;
-int tBawah = 26;
-int tKanan = 76;
-
-// Posisi awal enemy
+// All About Enemy
 int charEnemy = 60;
-float xEnemy = 75;
-float yEnemy = 25;
+float xEnemy = 76;
+float yEnemy = 26;
 float xEnemyPrev = xEnemy;
 float yEnemyPrev = yEnemy;
-
 // langkah enemy
 float lEnemy = 0.2;
-
-// Posisi awal fruit
-int xFruit = xAcak();
-int yFruit = yAcak();
-
-void dispFruit();
-void eatFruit();
-void overTime();
 
 // Displaying dan Movement hero & enemy
 void dispHeroEnemy();
 void heroMovement();
 void enemyMovement();
 
-// Untuk menerima inputan keyboard
-char clickedKey;
+// All About Fruit
+int xFruit = xAcak();
+int yFruit = yAcak();
+void dispFruit();
+void eatFruit();
 
-// Game over
+// End of Game
 int gameOver();
+void endGame(string);
 
-// Untuk menghitung detik
+// All About Timer
 float timer = 0;
+void dispTimer();
+void overTime();
+
+// All About Item
+int xItem;
+int yItem;
+int charItem;
+float itemCountdown = rand() % 10 + 10;
+float itemCooldown = 11;
+int isCountdown = 1;
+int isCooldown = 0;
+void itemAlgorithm();
+void dispItem();
+void eatItem();
 
 int main()
 {
@@ -75,11 +85,11 @@ int main()
   // start the game
   do
   {
+    // Menghitung detik
+    dispTimer();
 
-    // menghitung detik
-    timer += 0.1;
-    gotoxy(84, 2);
-    printf("%.0f ", timer);
+    // Algoritma Item
+    itemAlgorithm();
 
     // overtime (timer > 10 tp tdk makan)
     overTime();
@@ -90,41 +100,32 @@ int main()
       dispFruit();
     }
 
+    // jika item tertimpa enemy (memindahkan item)
+    if ((int)xEnemy == xItem && (int)yEnemy == yItem)
+    {
+      dispItem();
+    }
+
     // Displaying Hero & Enemy
     dispHeroEnemy();
 
     // Deteksi Keyboard
-    if (kbhit())
-    {
-      clickedKey = getch();
-    }
+    keyDetection();
 
     // Movement Hero & Enemy
     heroMovement();
     enemyMovement();
 
-    // Eating Fruit
+    // Eating Fruit & Item
+    eatItem();
     eatFruit();
+
+    // Eating Item
 
     // (1) game over
     if (gameOver() == 1)
     {
-      clearArena();
-      dispHeroEnemy();
-      gotoxy(33, 12);
-      printf("Game Over!!");
-      gotoxy(31, 13);
-      printf("Your Score : %d", score);
-      gotoxy(31, 14);
-      printf("High Score : %d", highestScore);
-      if (score > highestScore)
-      {
-        highestScore = score;
-        dispScore();
-        gotoxy(19, 15);
-        printf("Congrats!! You beat the highest score..");
-        pushHighScore(score);
-      }
+      endGame("over");
       break;
     }
 
@@ -132,19 +133,31 @@ int main()
 
   } while (clickedKey != 27);
 
-  gotoxy(0, 28);
+  if (clickedKey == 27)
+  {
+    endGame("exit");
+  }
+
+  gotoxy(0, 29);
 
   return 0;
 }
 
+/*
+  Fungsi-fungsi Internal
+*/
+
+// Fungsi inisialisasi (Awal)
 void init()
 {
   srand(time(0));
 
-  // set arena
+  // Loading screen
   clearCMD();
   printMenu();
   loadingScreen();
+
+  // Mengambil data high score
   highestScore = getHighScore();
   if (highestScore >= 10)
   {
@@ -154,110 +167,90 @@ void init()
   {
     xHighestScore--;
   }
+
+  // Set arena
   clearArena();
 
+  // Tampil score
   dispScore();
 
-  // tampil fruit pertama
+  // Tampil fruit
   dispFruit();
 }
 
+// Fungsi mengambil data high score
 int getHighScore()
 {
   FILE *readFile;
   int highScore;
+
+  // Membuka file
   readFile = fopen("high_score.txt", "r");
+
+  // Mengecek apakah file ada
   if (!readFile)
   {
     return 0;
   }
   else
   {
+    // Menuju baris terakhir
     while (!feof(readFile))
     {
+      // Dan mengambil data yang ada dlm file
       fscanf(readFile, "%d", &highScore);
       fflush(stdin);
     }
+    // Menutup file
     fclose(readFile);
   }
   return highScore;
 }
 
-int pushHighScore(int score)
+// Fungsi menyimpan data high score
+void pushHighScore(int score)
 {
   FILE *writeFile;
+  // Membuka file
   writeFile = fopen("high_score.txt", "w");
+
+  // Mengecek apakah file ada
   if (!writeFile)
   {
-    return 0;
   }
   else
   {
+    // Menulis data score tertinggi ke dlm file
     fprintf(writeFile, "%d", score);
   }
+  // Menutup file
   fclose(writeFile);
 }
 
-// Menampilkan score
+// Fungsi menampilkan Score
 void dispScore()
 {
-  gotoxy(83, 5);
+  gotoxy(85, 6);
   printf("000");
-  gotoxy(83, 7);
+  gotoxy(85, 8);
   printf("000");
 
-  gotoxy(xScore, 5);
+  gotoxy(xScore, 6);
   printf("%d ", score);
-  gotoxy(xHighestScore, 7);
+  gotoxy(xHighestScore, 8);
   printf("%d ", highestScore);
 }
 
-// Menampilkan fruit secara acak
-void dispFruit()
+// Fungsi mendeteksi keyboard
+void keyDetection()
 {
-  xFruit = xAcak();
-  yFruit = yAcak();
-  gotoxy(xFruit, yFruit);
-  printf("*");
-}
-
-// Saat hero memakan fruit
-void eatFruit()
-{
-  if (xHero == xFruit && yHero == yFruit)
+  if (kbhit())
   {
-    score += scoreAdd;
-    if (score == 10 || score == 100)
-    {
-      xScore--;
-    }
-    dispScore();
-
-    dispFruit();
-
-    timer = 0;
+    clickedKey = getch();
   }
 }
 
-void overTime()
-{
-  if ((int)timer >= 10)
-  {
-    if (score > 0)
-    {
-      score--;
-    }
-    if (score == 9 || score == 99)
-    {
-      xScore++;
-    }
-    dispScore();
-
-    timer = 0;
-  }
-}
-
-// Menampilkan hero dan enemy
+// Fungsi menampilkan hero dan enemy
 void dispHeroEnemy()
 {
   // Menghilangkan jejak Hero dan Enemy
@@ -273,7 +266,7 @@ void dispHeroEnemy()
   printf("%c", charEnemy);
 }
 
-// Mengerakkan hero dgn keyboard
+// Fungsi mengerakkan hero dgn keyboard
 void heroMovement()
 {
   if (toupper(clickedKey) == 'W') // ke atas
@@ -306,7 +299,7 @@ void heroMovement()
   }
 }
 
-// Mengerakkan enemy untuk mengejar hero
+// Fungsi mngerakkan enemy untuk mengejar hero
 void enemyMovement()
 {
   if (yEnemy < yHero + lEnemy) // enemy di atas hero
@@ -334,6 +327,71 @@ void enemyMovement()
   }
 }
 
+// Fungsi menampilkan fruit secara acak
+void dispFruit()
+{
+  xFruit = xAcak();
+  yFruit = yAcak();
+  gotoxy(xFruit, yFruit);
+  printf("*");
+}
+
+// Fungsi saat hero memakan fruit
+void eatFruit()
+{
+  if (xHero == xFruit && yHero == yFruit)
+  {
+    if (score + scoreAdd == 10 || score + scoreAdd == 11 || score + scoreAdd == 100 || score + scoreAdd == 101)
+    {
+      xScore--;
+    }
+    score += scoreAdd;
+    dispScore();
+
+    dispFruit();
+
+    timer = 0;
+  }
+}
+
+// Fungsi jika gameover / exitgame
+void endGame(string game)
+{
+
+  clearArena();
+  dispHeroEnemy();
+  gotoxy(34, 13);
+  if (game == "over")
+  {
+    printf("Game Over!!");
+  }
+  else
+  {
+    printf("Exit Game!!");
+  }
+  gotoxy(32, 14);
+  printf("Your Score : %d", score);
+  gotoxy(32, 15);
+  printf("High Score : %d", highestScore);
+  if (score > highestScore)
+  {
+    highestScore = score;
+    dispScore();
+    gotoxy(20, 16);
+    printf("Congrats!! You beat the highest score..");
+    pushHighScore(score);
+  }
+}
+
+// Fungsi menampilkan timer
+void dispTimer()
+{
+  timer += 0.1;
+  gotoxy(85, 3);
+  printf("%.0f ", timer);
+}
+
+// Fungsi kondisi game over
 int gameOver()
 {
   if (yHero == tAtas)
@@ -363,5 +421,99 @@ int gameOver()
   else
   {
     return 0;
+  }
+}
+
+// Fungsi pengurangan score jika timer > 10
+void overTime()
+{
+  if ((int)timer >= 10)
+  {
+    if (score > 0)
+    {
+      score--;
+    }
+    if (score == 9 || score == 99)
+    {
+      xScore++;
+    }
+    dispScore();
+
+    timer = 0;
+  }
+}
+
+// Fungsi algoritma item
+void itemAlgorithm()
+{
+  if (isCountdown == 1)
+  {
+    itemCountdown -= 0.1;
+  }
+
+  if (isCooldown == 1)
+  {
+    itemCooldown -= 0.1;
+    gotoxy(79, 22);
+    printf("%c ", charItem);
+    for (int i = 0; i <= (int)itemCooldown; i++)
+    {
+      gotoxy(81 + i, 22);
+      printf("%c ", 254);
+    }
+  }
+
+  if ((int)itemCountdown == 0)
+  {
+    itemCountdown = rand() % 10 + 10;
+    isCountdown = 0;
+
+    dispItem();
+  }
+
+  if ((int)itemCooldown == 0)
+  {
+    itemCooldown = 11;
+    isCountdown = 1;
+    isCooldown = 0;
+    // Reset item
+    scoreAdd = 1;
+    lEnemy = 0.2;
+    gotoxy(79, 22);
+    printf("   ");
+  }
+}
+
+// Fungsi menampilkan item
+void dispItem()
+{
+  xItem = xAcak();
+  yItem = yAcak();
+  if (rand() % 10 < 5)
+  {
+    charItem = 83;
+  }
+  else
+  {
+    charItem = 50;
+  }
+  gotoxy(xItem, yItem);
+  printf("%c", charItem);
+}
+
+// Fungsi saat memakan item
+void eatItem()
+{
+  if (xHero == xItem && yHero == yItem)
+  {
+    isCooldown = 1;
+    if (charItem == 50)
+    {
+      scoreAdd = 2;
+    }
+    if (charItem == 83)
+    {
+      lEnemy = 0.1;
+    }
   }
 }
