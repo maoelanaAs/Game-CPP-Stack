@@ -9,10 +9,15 @@
 
 using namespace std;
 
+void init();
+
+int getHighScore();
+int pushHighScore(int);
+
 int xScore = 85;
 int xHighestScore = 85;
 int score = 0;
-int highestScore = 0;
+int highestScore;
 int scoreAdd = 1;
 
 void dispScore();
@@ -65,20 +70,12 @@ float timer = 0;
 
 int main()
 {
-  srand(time(0));
-
-  // set arena
-  clearCMD();
-  printMenu();
-  clearArena();
-  dispScore();
-
-  // tampil fruit pertama
-  dispFruit();
+  init();
 
   // start the game
   do
   {
+
     // menghitung detik
     timer += 0.1;
     gotoxy(84, 2);
@@ -114,8 +111,20 @@ int main()
     {
       clearArena();
       dispHeroEnemy();
-      gotoxy(33, 13);
+      gotoxy(33, 12);
       printf("Game Over!!");
+      gotoxy(31, 13);
+      printf("Your Score : %d", score);
+      gotoxy(31, 14);
+      printf("High Score : %d", highestScore);
+      if (score > highestScore)
+      {
+        highestScore = score;
+        dispScore();
+        gotoxy(19, 15);
+        printf("Congrats!! You beat the highest score..");
+        pushHighScore(score);
+      }
       break;
     }
 
@@ -126,6 +135,67 @@ int main()
   gotoxy(0, 28);
 
   return 0;
+}
+
+void init()
+{
+  srand(time(0));
+
+  // set arena
+  clearCMD();
+  printMenu();
+  loadingScreen();
+  highestScore = getHighScore();
+  if (highestScore >= 10)
+  {
+    xHighestScore--;
+  }
+  if (highestScore >= 100)
+  {
+    xHighestScore--;
+  }
+  clearArena();
+
+  dispScore();
+
+  // tampil fruit pertama
+  dispFruit();
+}
+
+int getHighScore()
+{
+  FILE *readFile;
+  int highScore;
+  readFile = fopen("high_score.txt", "r");
+  if (!readFile)
+  {
+    return 0;
+  }
+  else
+  {
+    while (!feof(readFile))
+    {
+      fscanf(readFile, "%d", &highScore);
+      fflush(stdin);
+    }
+    fclose(readFile);
+  }
+  return highScore;
+}
+
+int pushHighScore(int score)
+{
+  FILE *writeFile;
+  writeFile = fopen("high_score.txt", "w");
+  if (!writeFile)
+  {
+    return 0;
+  }
+  else
+  {
+    fprintf(writeFile, "%d", score);
+  }
+  fclose(writeFile);
 }
 
 // Menampilkan score
@@ -160,14 +230,6 @@ void eatFruit()
     if (score == 10 || score == 100)
     {
       xScore--;
-      if ((highestScore + scoreAdd) == 10 || (highestScore + scoreAdd) == 100)
-      {
-        xHighestScore--;
-      }
-    }
-    if (score > highestScore)
-    {
-      highestScore = score;
     }
     dispScore();
 

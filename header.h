@@ -1,6 +1,7 @@
 #ifndef HEADER_H_INCLUDED
 #define HEADER_H_INCLUDED
 #include <iostream>
+#include <windows.h>
 
 using namespace std;
 
@@ -153,6 +154,33 @@ void printMenu()
   printf("CREATED BY <%c", 205);
   gotoxy(78, 25);
   printf("%c> maoelanaAs", 205);
+}
+
+void loadingScreen()
+{
+  gotoxy(35, 12);
+  printf("Loading");
+  for (int i = 0; i < 6; i++)
+  {
+    if (i < 3)
+    {
+      gotoxy(37 + i, 13);
+      printf("*");
+    }
+    if (i > 2)
+    {
+      gotoxy(33 + i, 13);
+      printf(" %c", 204);
+    }
+    Sleep(500);
+  }
+  gotoxy(35, 12);
+  printf("       ");
+  gotoxy(37, 13);
+  printf("   ");
+  gotoxy(35, 13);
+  printf("Start!!");
+  Sleep(500);
 }
 
 // Memberikan koordinat x secara acak
