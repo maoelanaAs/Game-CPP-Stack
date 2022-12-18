@@ -23,6 +23,7 @@ void dispScore();
 
 // Keyboard Clicked
 char clickedKey;
+char clickedKeyTemp;
 void keyDetection();
 
 // All About Hero
@@ -55,10 +56,10 @@ void enemyMovement();
 int xFruit = xAcak();
 int yFruit = yAcak();
 void dispFruit();
-void eatFruit();
+void eatFruit(int, int);
 
 // End of Game
-int gameOver();
+int gameOver(int, int);
 void endGame(string);
 
 // All About Timer
@@ -76,7 +77,7 @@ int isCountdown = 1;
 int isCooldown = 0;
 void itemAlgorithm();
 void dispItem();
-void eatItem();
+void eatItem(int, int);
 
 int main()
 {
@@ -116,14 +117,78 @@ int main()
     heroMovement();
     enemyMovement();
 
+    // Lidah
+    if (clickedKey == 32)
+    {
+      if (toupper(clickedKeyTemp) == 'W') // ke atas
+      {
+        gotoxy(xHero, yHero - 1); // Atas
+        printf("%c", 186);
+        eatItem(0, -1);
+        eatFruit(0, -1);
+        if (gameOver(0, -1) == 1)
+        {
+          endGame("over");
+          gotoxy(xHero, tAtas);
+          printf("%c", 205);
+          break;
+        }
+      }
+      if (toupper(clickedKeyTemp) == 'A') // ke kiri
+      {
+        gotoxy(xHero - 1, yHero); // Kiri
+        printf("%c", 205);
+        eatItem(-1, 0);
+        eatFruit(-1, 0);
+        if (gameOver(-1, 0) == 1)
+        {
+          endGame("over");
+          gotoxy(tKiri, yHero);
+          printf("%c", 186);
+          break;
+        }
+      }
+      if (toupper(clickedKeyTemp) == 'S') // ke bawah
+      {
+        gotoxy(xHero, yHero + 1); // Bawah
+        printf("%c", 186);
+        eatItem(0, 1);
+        eatFruit(0, 1);
+        if (gameOver(0, 1) == 1)
+        {
+          endGame("over");
+          gotoxy(xHero, tBawah);
+          printf("%c", 205);
+          break;
+        }
+      }
+      if (toupper(clickedKeyTemp) == 'D') // ke kanan
+      {
+        gotoxy(xHero + 1, yHero); // Kanan
+        printf("%c", 205);
+        eatItem(1, 0);
+        eatFruit(1, 0);
+        if (gameOver(0, 1) == 1)
+        {
+          endGame("over");
+          gotoxy(tKanan, yHero);
+          printf("%c", 186);
+          break;
+        }
+      }
+
+      Sleep(50);
+
+      clickedKey = clickedKeyTemp;
+      heroMovement();
+    }
+
     // Eating Fruit & Item
-    eatItem();
-    eatFruit();
+    eatItem(0, 0);
+    eatFruit(0, 0);
 
-    // Eating Item
-
-    // (1) game over
-    if (gameOver() == 1)
+    // Game over
+    if (gameOver(0, 0) == 1)
     {
       endGame("over");
       break;
@@ -230,9 +295,9 @@ void pushHighScore(int score)
 // Fungsi menampilkan Score
 void dispScore()
 {
-  gotoxy(85, 6);
+  gotoxy(84, 6);
   printf("000");
-  gotoxy(85, 8);
+  gotoxy(84, 8);
   printf("000");
 
   gotoxy(xScore, 6);
@@ -246,6 +311,7 @@ void keyDetection()
 {
   if (kbhit())
   {
+    clickedKeyTemp = clickedKey;
     clickedKey = getch();
   }
 }
@@ -337,11 +403,15 @@ void dispFruit()
 }
 
 // Fungsi saat hero memakan fruit
-void eatFruit()
+void eatFruit(int x, int y)
 {
-  if (xHero == xFruit && yHero == yFruit)
+  if (xHero + x == xFruit && yHero + y == yFruit)
   {
-    if (score + scoreAdd == 10 || score + scoreAdd == 11 || score + scoreAdd == 100 || score + scoreAdd == 101)
+    if (score + scoreAdd == 10 || score + scoreAdd == 100)
+    {
+      xScore--;
+    }
+    if ((scoreAdd == 2 && score + scoreAdd == 11) || (scoreAdd == 2 && score + scoreAdd == 101))
     {
       xScore--;
     }
@@ -392,29 +462,29 @@ void dispTimer()
 }
 
 // Fungsi kondisi game over
-int gameOver()
+int gameOver(int x, int y)
 {
-  if (yHero == tAtas)
+  if (yHero + y == tAtas)
   {
-    yHero += 1;
+    yHero += (1 + y);
     return 1;
   }
-  else if (xHero == tKiri)
+  else if (xHero + x == tKiri)
   {
-    xHero += 1;
+    xHero += (1 + x);
     return 1;
   }
-  else if (yHero == tBawah)
+  else if (yHero + y == tBawah)
   {
-    yHero -= 1;
+    yHero -= (1 - y);
     return 1;
   }
-  else if (xHero == tKanan)
+  else if (xHero + x == tKanan)
   {
-    xHero -= 1;
+    xHero -= (1 - x);
     return 1;
   }
-  else if (xHero == (int)xEnemy && yHero == (int)yEnemy)
+  else if (xHero + x == (int)xEnemy && yHero + y == (int)yEnemy)
   {
     return 1;
   }
@@ -502,9 +572,9 @@ void dispItem()
 }
 
 // Fungsi saat memakan item
-void eatItem()
+void eatItem(int x, int y)
 {
-  if (xHero == xItem && yHero == yItem)
+  if (xHero + x == xItem && yHero + y == yItem)
   {
     isCooldown = 1;
     if (charItem == 50)
