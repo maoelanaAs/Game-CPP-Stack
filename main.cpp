@@ -37,6 +37,22 @@ int tAtas = 1;
 int tKiri = 1;
 int tBawah = 27;
 int tKanan = 77;
+// Nyawa hero
+struct nyawa
+{
+  int value;
+  nyawa *next;
+};
+
+nyawa *head = NULL;
+nyawa *tail = NULL;
+int xNyawa = 88;
+int jmlNyawa;
+
+bool isEmpty();
+void insNyawa();
+void delNyawa();
+void dispNyawa();
 
 // All About Enemy
 int charEnemy = 60;
@@ -51,6 +67,7 @@ float lEnemy = 0.2;
 void dispHeroEnemy();
 void heroMovement();
 void enemyMovement();
+void lidahHero();
 
 // All About Fruit
 int xFruit = xAcak();
@@ -59,7 +76,9 @@ void dispFruit();
 void eatFruit(int, int);
 
 // End of Game
+int isOver = 0;
 int gameOver(int, int);
+void init2();
 void endGame(string);
 
 // All About Timer
@@ -118,70 +137,7 @@ int main()
     enemyMovement();
 
     // Lidah
-    if (clickedKey == 32)
-    {
-      if (toupper(clickedKeyTemp) == 'W') // ke atas
-      {
-        gotoxy(xHero, yHero - 1); // Atas
-        printf("%c", 186);
-        eatItem(0, -1);
-        eatFruit(0, -1);
-        if (gameOver(0, -1) == 1)
-        {
-          endGame("over");
-          gotoxy(xHero, tAtas);
-          printf("%c", 205);
-          break;
-        }
-      }
-      if (toupper(clickedKeyTemp) == 'A') // ke kiri
-      {
-        gotoxy(xHero - 1, yHero); // Kiri
-        printf("%c", 205);
-        eatItem(-1, 0);
-        eatFruit(-1, 0);
-        if (gameOver(-1, 0) == 1)
-        {
-          endGame("over");
-          gotoxy(tKiri, yHero);
-          printf("%c", 186);
-          break;
-        }
-      }
-      if (toupper(clickedKeyTemp) == 'S') // ke bawah
-      {
-        gotoxy(xHero, yHero + 1); // Bawah
-        printf("%c", 186);
-        eatItem(0, 1);
-        eatFruit(0, 1);
-        if (gameOver(0, 1) == 1)
-        {
-          endGame("over");
-          gotoxy(xHero, tBawah);
-          printf("%c", 205);
-          break;
-        }
-      }
-      if (toupper(clickedKeyTemp) == 'D') // ke kanan
-      {
-        gotoxy(xHero + 1, yHero); // Kanan
-        printf("%c", 205);
-        eatItem(1, 0);
-        eatFruit(1, 0);
-        if (gameOver(0, 1) == 1)
-        {
-          endGame("over");
-          gotoxy(tKanan, yHero);
-          printf("%c", 186);
-          break;
-        }
-      }
-
-      Sleep(50);
-
-      clickedKey = clickedKeyTemp;
-      heroMovement();
-    }
+    lidahHero();
 
     // Eating Fruit & Item
     eatItem(0, 0);
@@ -190,7 +146,20 @@ int main()
     // Game over
     if (gameOver(0, 0) == 1)
     {
-      endGame("over");
+      delNyawa();
+      dispNyawa();
+      if (isEmpty())
+      {
+        endGame("over");
+        isOver = 1;
+      }
+      else
+      {
+        init2();
+      }
+    }
+    if (isOver == 1)
+    {
       break;
     }
 
@@ -233,11 +202,21 @@ void init()
     xHighestScore--;
   }
 
+  // Insert Nyawa
+  for (int i = 0; i < 3; i++)
+  {
+    insNyawa();
+  }
+  jmlNyawa = 3;
+
   // Set arena
   clearArena();
 
   // Tampil score
   dispScore();
+
+  // Tampil score
+  dispNyawa();
 
   // Tampil fruit
   dispFruit();
@@ -313,6 +292,107 @@ void keyDetection()
   {
     clickedKeyTemp = clickedKey;
     clickedKey = getch();
+  }
+}
+
+// Fungsi mengecek nyawa
+bool isEmpty()
+{
+  return head == NULL;
+}
+
+// Fungsi menambah nyawa
+void insNyawa()
+{
+  if (isEmpty())
+  {
+    nyawa *bantuan = new nyawa();
+    bantuan->value = 2;
+    bantuan->next = NULL;
+
+    head = tail = bantuan;
+  }
+  else
+  {
+    nyawa *temp = new nyawa();
+    temp->value = 2;
+    temp->next = NULL;
+
+    tail->next = temp;
+    tail = temp;
+  }
+}
+
+// Fungsi mengurangi nyawa
+void delNyawa()
+{
+  if (isEmpty())
+  {
+  }
+  else
+  {
+    struct nyawa *key = head;
+    struct nyawa *previous = NULL;
+    int posisi = 0;
+
+    while (key != NULL)
+    {
+      if (key->value == 2)
+      {
+        if (posisi == 0)
+        {
+          previous = key;
+          previous = previous->next;
+          head = previous;
+          jmlNyawa--;
+          free(key);
+          break;
+        }
+        else if (key->next == NULL)
+        {
+          previous->next = NULL;
+          tail = previous;
+          jmlNyawa--;
+          free(key);
+          break;
+        }
+        else
+        {
+          previous->next = key->next;
+          tail = previous;
+          jmlNyawa--;
+          free(key);
+          break;
+        }
+      }
+      else
+      {
+      }
+      previous = key;
+      key = key->next;
+      posisi++;
+    }
+  }
+}
+
+// Fungsi Menampilkan nyawa
+void dispNyawa()
+{
+  nyawa *key = head;
+
+  int xNyawa = 88;
+  for (int i = 0; i < 3; i++)
+  {
+    gotoxy(xNyawa + i, 3);
+    printf(" ");
+  }
+
+  while (key != NULL)
+  {
+    gotoxy(xNyawa, 3);
+    printf("%c", key->value);
+    xNyawa++;
+    key = key->next;
   }
 }
 
@@ -393,6 +473,111 @@ void enemyMovement()
   }
 }
 
+// Fungsi untuk mengeluarkan lidah hero
+void lidahHero()
+{
+  if (clickedKey == 32)
+  {
+    if (toupper(clickedKeyTemp) == 'W') // ke atas
+    {
+      gotoxy(xHero, yHero - 1); // Atas
+      printf("%c", 186);
+      eatItem(0, -1);
+      eatFruit(0, -1);
+      if (gameOver(0, -1) == 1)
+      {
+        delNyawa();
+        dispNyawa();
+        gotoxy(xHero, tAtas);
+        printf("%c", 205);
+        if (isEmpty())
+        {
+          endGame("over");
+          isOver = 1;
+        }
+        else
+        {
+          init2();
+        }
+      }
+    }
+    if (toupper(clickedKeyTemp) == 'A') // ke kiri
+    {
+      gotoxy(xHero - 1, yHero); // Kiri
+      printf("%c", 205);
+      eatItem(-1, 0);
+      eatFruit(-1, 0);
+      if (gameOver(-1, 0) == 1)
+      {
+        delNyawa();
+        dispNyawa();
+        gotoxy(tKiri, yHero);
+        printf("%c", 186);
+        if (isEmpty())
+        {
+          endGame("over");
+          isOver = 1;
+        }
+        else
+        {
+          init2();
+        }
+      }
+    }
+    if (toupper(clickedKeyTemp) == 'S') // ke bawah
+    {
+      gotoxy(xHero, yHero + 1); // Bawah
+      printf("%c", 186);
+      eatItem(0, 1);
+      eatFruit(0, 1);
+      if (gameOver(0, 1) == 1)
+      {
+        delNyawa();
+        dispNyawa();
+        gotoxy(xHero, tBawah);
+        printf("%c", 205);
+        if (isEmpty())
+        {
+          endGame("over");
+          isOver = 1;
+        }
+        else
+        {
+          init2();
+        }
+      }
+    }
+    if (toupper(clickedKeyTemp) == 'D') // ke kanan
+    {
+      gotoxy(xHero + 1, yHero); // Kanan
+      printf("%c", 205);
+      eatItem(1, 0);
+      eatFruit(1, 0);
+      if (gameOver(0, 1) == 1)
+      {
+        delNyawa();
+        dispNyawa();
+        gotoxy(tKanan, yHero);
+        printf("%c", 186);
+        if (isEmpty())
+        {
+          endGame("over");
+          isOver = 1;
+        }
+        else
+        {
+          init2();
+        }
+      }
+    }
+
+    Sleep(50);
+
+    clickedKey = clickedKeyTemp;
+    heroMovement();
+  }
+}
+
 // Fungsi menampilkan fruit secara acak
 void dispFruit()
 {
@@ -457,7 +642,7 @@ void endGame(string game)
 void dispTimer()
 {
   timer += 0.1;
-  gotoxy(85, 3);
+  gotoxy(81, 3);
   printf("%.0f ", timer);
 }
 
@@ -492,6 +677,36 @@ int gameOver(int x, int y)
   {
     return 0;
   }
+}
+
+// Fungsi setelah nyawa dikurang
+void init2()
+{
+  charHero = 206;
+  xHero = 39;
+  yHero = 14;
+  xHeroPrev = xHero + 1;
+  yHeroPrev = yHero;
+
+  charEnemy = 60;
+  xEnemy = 76;
+  yEnemy = 26;
+  xEnemyPrev = xEnemy;
+  yEnemyPrev = yEnemy;
+
+  clearArena();
+  gotoxy(32, 15);
+  printf("Sisa nyawa : ");
+  for (int i = 0; i < jmlNyawa; i++)
+  {
+    printf("%c", 2);
+  }
+
+  loadingScreen();
+  clearArena();
+  dispFruit();
+  dispItem();
+  dispHeroEnemy();
 }
 
 // Fungsi pengurangan score jika timer > 10

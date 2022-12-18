@@ -99,10 +99,18 @@ void printMenu()
 
   gotoxy(77, 1);
   printf("%c", 203);
+  gotoxy(85, 1);
+  printf("%c", 203);
   gotoxy(77, 27);
   printf("%c", 202);
   gotoxy(77, 4);
   printf("%c", 204);
+  gotoxy(85, 2);
+  printf("%c", 186);
+  gotoxy(85, 3);
+  printf("%c", 186);
+  gotoxy(85, 4);
+  printf("%c", 202);
   gotoxy(77, 9);
   printf("%c", 204);
   gotoxy(77, 15);
@@ -122,8 +130,10 @@ void printMenu()
   gotoxy(93, 23);
   printf("%c", 185);
 
-  gotoxy(83, 2);
+  gotoxy(79, 2);
   printf("TIMER");
+  gotoxy(87, 2);
+  printf("NYAWA");
   gotoxy(83, 5);
   printf("SCORE");
   gotoxy(82, 7);
